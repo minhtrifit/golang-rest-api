@@ -1,12 +1,12 @@
 > ## Golang Restfull API Docker Document
 
-## RUN SERVER: `go run main.go`
-
 ## RUN DOCKER: `docker-compose -f .\docker-compose.yml up`
 
-## Mongo-express browser: `http://localhost:8081`
-## Username: `root`
-## Password: `root`
+## RUN SERVER: `go run main.go`
+
+## Open Mongo-express browser: `http://localhost:8081`
+### Username: `root`
+### Password: `root`
 
 ## API Listing
 
