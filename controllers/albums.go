@@ -111,7 +111,7 @@ func AddNewAlbum(c *gin.Context, client *mongo.Client) {
 
 	newAlbum := models.Album{};
 
-    // Call BindJSON to bind the received JSON to newAlbum.
+    // Call BindJSON to bind the received JSON to Album Struct.
     if err := c.BindJSON(&newAlbum); err != nil {
         return;
     }
@@ -177,7 +177,7 @@ func DeleteAlbumById(c *gin.Context, client *mongo.Client) {
 
 	deleteAlbum := models.Album{};
 
-    // Call BindJSON to bind the received JSON to newAlbum.
+    // Call BindJSON to bind the received JSON to Album Struct.
     if err := c.BindJSON(&deleteAlbum); err != nil {
         return;
     }
@@ -208,5 +208,48 @@ func DeleteAlbumById(c *gin.Context, client *mongo.Client) {
 		"status": 200,
 		"message": "Delete album successfully",
 		"albums": deleteAlbum.ID,
+	});
+}
+
+func EditAlbum(c *gin.Context, client *mongo.Client) {
+	coll := models.AlbumsCollection(*client);
+
+	editAlbum := models.Album{};
+
+    // Call BindJSON to bind the received JSON to Album Struct.
+    if err := c.BindJSON(&editAlbum); err != nil {
+        return;
+    }
+
+	// Find edit album by id
+	filter := bson.D{{Key: "id", Value: editAlbum.ID}};
+
+	update := bson.D{
+		{"$set",
+			bson.D{
+				{"title", editAlbum.Title},
+				{"artist", editAlbum.Artist},
+				{"price", editAlbum.Price},
+			},
+        },
+	}
+	
+	result, err := coll.UpdateOne(context.TODO(), filter, update);
+
+	println(configs.Blue, result.MatchedCount, configs.Reset);
+
+	if err != nil {
+		println(configs.Red, err, configs.Reset);
+		c.JSON(404, gin.H{
+			"status": 404,
+			"message": "Edit album failed",
+		});
+		return;
+	}
+
+	c.JSON(200, gin.H{
+		"status": 200,
+		"message": "Edit album successfully",
+		"data": result,
 	});
 }

@@ -76,7 +76,6 @@
 
 ```php
 {
-  "id": 4,
   "title": "Nơi Nào Có Tình Yêu",
   "artist": "Minh Trí",
   "price": 150.00
@@ -94,6 +93,58 @@
     "price": 150
   },
   "message": "Insert album successfully",
+  "status": 200
+}
+```
+
+### Delete Album By Id:
+
+`DELETE: http://localhost:5000/albums/delete`
+
+**Request Body**
+
+```php
+{
+  "id": 4
+}
+```
+
+**Response**
+
+```php
+{
+  "albums": 4,
+  "message": "Delete album successfully",
+  "status": 200
+}
+```
+
+### Edit Album:
+
+`PUT: http://localhost:5000/albums/edit`
+
+**Request Body**
+
+```php
+{
+  "id": 4,
+  "title": "Nơi Không Có Em 2",
+  "artist": "Minh Trí",
+  "price": 150.69
+}
+```
+
+**Response**
+
+```php
+{
+  "data": {
+    "MatchedCount": 1,
+    "ModifiedCount": 1,
+    "UpsertedCount": 0,
+    "UpsertedID": null
+  },
+  "message": "Edit album successfully",
   "status": 200
 }
 ```
