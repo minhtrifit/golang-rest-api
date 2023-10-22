@@ -16,8 +16,8 @@ import (
 // use a single instance of Validate, it caches struct info
 var validate *validator.Validate
 
-func GetAlbums(c *gin.Context) {
-	client, err := mongo.Connect(c, options.Client().ApplyURI("mongodb://admin:123@localhost:27017/?authSource=admin"));
+func GetAlbums(c *gin.Context, client *mongo.Client) {
+	// client, err := mongo.Connect(c, options.Client().ApplyURI("mongodb://admin:123@localhost:27017/?authSource=admin"));
 
 	// col := client.Database("golang-albums").Collection("albums");
 	col := models.AlbumsCollection(*client);
@@ -73,8 +73,8 @@ func GetAlbums(c *gin.Context) {
 	})
 }
 
-func GetAlbumByID(c *gin.Context) {
-	client := configs.ConnectDatabase();
+func GetAlbumByID(c *gin.Context, client *mongo.Client) {
+	// client := configs.ConnectDatabase();
 	coll := models.AlbumsCollection(*client);
 
 	id := c.Query("id");
@@ -105,8 +105,8 @@ func GetAlbumByID(c *gin.Context) {
 	}
 }
 
-func AddNewAlbum(c *gin.Context) {
-	client := configs.ConnectDatabase();
+func AddNewAlbum(c *gin.Context, client *mongo.Client) {
+	// client := configs.ConnectDatabase();
 	coll := models.AlbumsCollection(*client);
 
 	newAlbum := models.Album{};
@@ -170,4 +170,43 @@ func AddNewAlbum(c *gin.Context) {
 			"data": myAlbum,
 		});
 	}
+}
+
+func DeleteAlbumById(c *gin.Context, client *mongo.Client) {
+	coll := models.AlbumsCollection(*client);
+
+	deleteAlbum := models.Album{};
+
+    // Call BindJSON to bind the received JSON to newAlbum.
+    if err := c.BindJSON(&deleteAlbum); err != nil {
+        return;
+    }
+
+	// Get only album id
+	filter := bson.D{{Key: "id", Value: deleteAlbum.ID}};
+
+	result, err := coll.DeleteOne(context.TODO(), filter);
+
+	if err != nil {
+		println(configs.Red, err, configs.Reset);
+		c.JSON(404, gin.H{
+			"status": 404,
+			"message": "Delete album failed",
+		});
+		return;
+	}
+
+	if(result.DeletedCount == 0) {
+		c.JSON(404, gin.H{
+			"status": 404,
+			"message": "Album not found",
+		});
+		return;
+	}
+
+	c.JSON(200, gin.H{
+		"status": 200,
+		"message": "Delete album successfully",
+		"albums": deleteAlbum.ID,
+	});
 }

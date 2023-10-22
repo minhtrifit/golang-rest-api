@@ -51,7 +51,7 @@
 
 **Request Body**
 
-`GET http://localhost:5000/albums/query?id=1`
+`GET: http://localhost:5000/albums/query?id=1`
 
 **Response**
 
