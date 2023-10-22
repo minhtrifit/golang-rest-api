@@ -80,3 +80,7 @@
 **GET Method**
 
 ![GET](./showcase/get.png "GET Method")
+
+**POST Method**
+
+![POST](./showcase/post.png "POST Method")
