@@ -74,3 +74,9 @@
   "status": 200
 }
 ```
+
+### Showcases:
+
+**GET Method**
+
+![GET](./showcase/get.png "GET Method");

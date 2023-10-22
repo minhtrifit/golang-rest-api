@@ -5,11 +5,19 @@ import "go.mongodb.org/mongo-driver/mongo"
 // Upercase variables
 
 type Album struct {
-	ID     int  `json:"id"`
+	ID     int     `json:"id"`
 	Title  string  `json:"title"`
 	Artist string  `json:"artist"`
 	Price  float64 `json:"price"`
 }
+
+type AlbumBson struct {
+	ID     int     `bson:"id"`
+	Title  string  `bson:"title"`
+	Artist string  `bson:"artist"`
+	Price  float64 `bson:"price"`
+}
+
 
 // var Albums = []Album {
 // 	{ID: 1, Title: "Blue Train", Artist: "John Coltrane", Price: 56.99},

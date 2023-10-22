@@ -4,6 +4,7 @@ import (
 	"context"
 	"rest_api_golang/configs"
 	"rest_api_golang/models"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
@@ -30,11 +31,34 @@ func GetAlbums(c *gin.Context) {
 		println(configs.Red, err, configs.Reset);
 	}
 	
-	//var Albums = []models.Album{};
+	var Albums = []models.Album{};
 
 	for _, result := range results {
-		println(configs.Blue, result, configs.Reset);
-	}	
+		var album models.Album;
+		var albumBson models.AlbumBson;
+
+		// convert bson to struct
+		bsonBytes, _ := bson.Marshal(result);
+		bson.Unmarshal(bsonBytes, &albumBson);
+
+		album.ID = albumBson.ID;
+		album.Title = albumBson.Title;
+		album.Artist = albumBson.Artist;
+		album.Price = albumBson.Price;
+
+		// Insert to slice
+		Albums = append(Albums, album);
+	}
+	
+	for _, album := range Albums {
+		id := strconv.Itoa(album.ID);
+		price := strconv.FormatFloat(album.Price, 'f', -1, 64);
+
+		println(configs.Purple, id, configs.Reset);
+		println(configs.Red, album.Title, configs.Reset);
+		println(configs.Blue, album.Artist, configs.Reset);
+		println(configs.Green, price, configs.Reset);
+	}
 
 	// Result response
 	c.JSON(200, gin.H{
