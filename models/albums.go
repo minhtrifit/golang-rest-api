@@ -6,9 +6,9 @@ import "go.mongodb.org/mongo-driver/mongo"
 
 type Album struct {
 	ID     int     `json:"id"`
-	Title  string  `json:"title"`
-	Artist string  `json:"artist"`
-	Price  float64 `json:"price"`
+	Title  string  `json:"title" validate:"required"`
+	Artist string  `json:"artist" validate:"required"`
+	Price  float64 `json:"price" validate:"gte=1"`
 }
 
 type AlbumBson struct {
@@ -17,7 +17,6 @@ type AlbumBson struct {
 	Artist string  `bson:"artist"`
 	Price  float64 `bson:"price"`
 }
-
 
 // var Albums = []Album {
 // 	{ID: 1, Title: "Blue Train", Artist: "John Coltrane", Price: 56.99},

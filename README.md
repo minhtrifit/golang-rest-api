@@ -79,4 +79,4 @@
 
 **GET Method**
 
-![GET](./showcase/get.png "GET Method");
+![GET](./showcase/get.png "GET Method")

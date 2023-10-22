@@ -7,10 +7,14 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
+
+// use a single instance of Validate, it caches struct info
+var validate *validator.Validate
 
 func GetAlbums(c *gin.Context) {
 	client, err := mongo.Connect(c, options.Client().ApplyURI("mongodb://admin:123@localhost:27017/?authSource=admin"));
@@ -54,10 +58,10 @@ func GetAlbums(c *gin.Context) {
 		id := strconv.Itoa(album.ID);
 		price := strconv.FormatFloat(album.Price, 'f', -1, 64);
 
-		println(configs.Purple, id, configs.Reset);
-		println(configs.Red, album.Title, configs.Reset);
-		println(configs.Blue, album.Artist, configs.Reset);
-		println(configs.Green, price, configs.Reset);
+		println(configs.Purple, "Id:", id, configs.Reset);
+		println(configs.Red, "Title:", album.Title, configs.Reset);
+		println(configs.Blue, "Artist:", album.Artist, configs.Reset);
+		println(configs.Green, "Price:", price, configs.Reset);
 	}
 
 	// Result response
@@ -75,7 +79,7 @@ func AddNewAlbum(c *gin.Context) {
 	client := configs.ConnectDatabase();
 	coll := models.AlbumsCollection(*client);
 
-	var newAlbum models.Album;
+	newAlbum := models.Album{};
 
     // Call BindJSON to bind the received JSON to newAlbum.
     if err := c.BindJSON(&newAlbum); err != nil {
@@ -89,13 +93,33 @@ func AddNewAlbum(c *gin.Context) {
 	myAlbum.Artist = newAlbum.Artist;
 	myAlbum.Price = newAlbum.Price;
 
-    // Add the new album to the slice.
-	_, _ = coll.InsertOne(context.TODO(), &myAlbum);
-    
-	// Result response
-	c.JSON(200, gin.H{
-		"status": 200,
-		"message": "Insert album successfully",
-		"data": myAlbum,
-	})
+	// Validate request body
+	validate = validator.New();
+	albumValid := &myAlbum;
+	err := validate.Struct(albumValid);
+
+	if err != nil {
+		c.JSON(400, gin.H{
+			"status": 400,
+			"message": "Wrong format",
+		});	
+	}else {
+		// Add the new album to the slice.
+		_, err := coll.InsertOne(context.TODO(), &myAlbum);
+
+		// check for errors in the insertion
+		if err != nil {
+			c.JSON(400, gin.H{
+				"status": 400,
+				"message": "Insert album failed",
+			})
+		}
+		
+		// Result response
+		c.JSON(201, gin.H{
+			"status": 201,
+			"message": "Insert album successfully",
+			"data": myAlbum,
+		});
+	}
 }
