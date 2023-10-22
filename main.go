@@ -15,6 +15,7 @@ func main() {
 	router := gin.Default();
 
 	router.GET("/", controllers.HandleRunServer);
+	router.GET("/albums/:id", controllers.GetAlbumByID)
 	router.GET("/albums", controllers.GetAlbums);
 	router.POST("/albums/add", controllers.AddNewAlbum);
 

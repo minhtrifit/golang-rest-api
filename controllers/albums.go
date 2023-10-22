@@ -74,7 +74,35 @@ func GetAlbums(c *gin.Context) {
 }
 
 func GetAlbumByID(c *gin.Context) {
+	client := configs.ConnectDatabase();
+	coll := models.AlbumsCollection(*client);
 
+	id := c.Query("id");
+	intId, err := strconv.Atoi(id);
+
+	println(configs.Red, "QUERY ID", id, configs.Reset);
+
+	filter := bson.D{{Key: "id", Value: intId}};
+
+	var result models.Album;
+	err = coll.FindOne(context.TODO(), filter).Decode(&result);
+
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			// This error means your query did not match any documents.
+			c.JSON(404, gin.H{
+				"status": 404,
+				"message": "Album not found",
+			});
+			return
+		}
+	}else {
+		c.JSON(200, gin.H{
+			"status": 200,
+			"message": "Find album successfully",
+			"data": result,
+		});
+	}
 }
 
 func AddNewAlbum(c *gin.Context) {

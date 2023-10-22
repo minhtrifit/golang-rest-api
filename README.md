@@ -12,6 +12,8 @@
 
 ### Get All Albums:
 
+**Request**
+
 `GET: http://localhost:5000/albums`
 
 **Response**
@@ -41,6 +43,27 @@
       "title": "Sarah Vaughan and Clifford Brown"
     }
   ],
+  "status": 200
+}
+```
+
+### Get album by id
+
+**Request Body**
+
+`GET http://localhost:5000/albums/query?id=1`
+
+**Response**
+
+```php
+{
+  "data": {
+    "id": 1,
+    "title": "Blue Train",
+    "artist": "John Coltrane",
+    "price": 56.99
+  },
+  "message": "Find album successfully",
   "status": 200
 }
 ```
