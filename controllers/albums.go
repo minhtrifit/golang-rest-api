@@ -22,7 +22,9 @@ func GetAlbums(c *gin.Context) {
 	// col := client.Database("golang-albums").Collection("albums");
 	col := models.AlbumsCollection(*client);
 
-	cursor, err := col.Find(context.TODO(), bson.D{})
+	// Database query
+	cursor, err := col.Find(context.TODO(), bson.D{});
+
 	// check for errors in the finding
 	if err != nil {
 		panic(err);
@@ -104,6 +106,24 @@ func AddNewAlbum(c *gin.Context) {
 			"message": "Wrong format",
 		});	
 	}else {
+		opts := options.FindOne().SetSort(bson.M{"$natural": -1})
+		var lastAlbum models.Album;
+		var lastAlbumBson models.AlbumBson;
+
+		if err = coll.FindOne(context.TODO(), bson.M{}, opts).Decode(&lastAlbumBson); err != nil {
+			println(configs.Red, err, configs.Reset);
+		}
+		
+		// convert bson to struct
+		bsonBytes, _ := bson.Marshal(lastAlbumBson);
+		bson.Unmarshal(bsonBytes, &lastAlbumBson);
+
+		lastAlbum.ID = lastAlbumBson.ID + 1;
+		myAlbum.ID = lastAlbum.ID; // Add new album Id
+		println(configs.Cyan, "New album ID:", myAlbum.ID, configs.Reset);
+
+
+		// Database query
 		// Add the new album to the slice.
 		_, err := coll.InsertOne(context.TODO(), &myAlbum);
 
